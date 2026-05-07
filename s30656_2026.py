@@ -55,8 +55,18 @@ def insert_name(sequence: str, name: str) -> str:
 
 
 def format_fasta(seq_id: str, description: str, sequence: str, line_width: int = 80) -> str:
-    """Zwraca sformatowany rekord FASTA jako tekst."""
-    pass
+    """Zwraca sformatowany rekord FASTA w formie tekstu"""
+
+    if description == "":
+        fasta_text = ">" + seq_id + "\n"
+    else:
+        fasta_text = ">" + seq_id + " " + description + "\n"
+
+    for i in range(0, len(sequence), line_width):
+        line = sequence[i:i + line_width]
+        fasta_text += line + "\n"
+
+    return fasta_text
 
 
 def validate_positive_int(prompt: str, min_val: int = 1, max_val: int = 100_000) -> int:
@@ -95,14 +105,23 @@ def main():
     sequence_with_name = insert_name(sequence, name)
     stats = calculate_stats(sequence)
 
-    print(sequence_with_name+"\n")
-    print("Statystyki sekwencji:")
+    fasta_text = format_fasta(seq_id, description, sequence_with_name)
 
-    print(f"A: {stats['A']:.2f}%")
-    print(f"C: {stats['C']:.2f}%")
-    print(f"G: {stats['G']:.2f}%")
-    print(f"T: {stats['T']:.2f}%")
-    print(f"GC-content: {stats['GC']:.2f}%")
+    file_name = seq_id + ".fasta"
+
+    with open(file_name, "w") as file:
+        file.write(fasta_text)
+
+    print()
+    print("Sekwencja zapisana do pliku: " + file_name)
+
+    print()
+    print(f"Statystyki sekwencji (n={length}):")
+    print(f"  A: {stats['A']:.2f}%")
+    print(f"  C: {stats['C']:.2f}%")
+    print(f"  G: {stats['G']:.2f}%")
+    print(f"  T: {stats['T']:.2f}%")
+    print(f"  GC-content: {stats['GC']:.2f}%")
 
 if __name__ == "__main__":
     main()
